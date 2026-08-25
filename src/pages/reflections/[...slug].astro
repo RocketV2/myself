@@ -23,6 +23,12 @@ const { Content } = await render(entry);
         <a href={p('reflections/')}>感悟反思</a>
         <span aria-hidden="true"> / </span>
         <time datetime={entry.data.date.toISOString()}>{fmtCN(entry.data.date)}</time>
+        {entry.data.time && (
+          <>
+            <span aria-hidden="true"> · </span>
+            {entry.data.time}
+          </>
+        )}
       </p>
       <h1>{entry.data.title}</h1>
       {entry.data.tags.length > 0 && (

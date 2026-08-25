@@ -10,6 +10,7 @@ const reflections = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
+    time: z.string().optional(), // 时刻，如「下午六点」（同日多篇时区分）
     excerpt: z.string().optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
