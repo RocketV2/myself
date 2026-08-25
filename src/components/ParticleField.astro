@@ -1,0 +1,145 @@
+---
+// 粒子三层（最便宜到增强）：
+//  1) 径向渐变深空底（纯 CSS，零成本）
+//  2) 静态星空：构建期用确定性伪随机生成的 SVG 星点 —— 无 JS / reduced-motion 体验
+//  3) Canvas 漂移：仅增强，reduced-motion / 无 JS 时完全停用
+function mulberry32(seed: number) {
+  return function () {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const rand = mulberry32(20260825);
+const stars = Array.from({ length: 36 }, () => ({
+  x: +(rand() * 1440).toFixed(1),
+  y: +(rand() * 900).toFixed(1),
+  r: +(0.4 + rand() * 1.1).toFixed(2),
+  o: +(0.15 + rand() * 0.35).toFixed(2),
+}));
+---
+
+<div class="particle-field" aria-hidden="true">
+  <div class="pf-gradient"></div>
+  <svg class="pf-stars" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    {stars.map((s) => (
+      <circle cx={s.x} cy={s.y} r={s.r} fill="#e8e6e1" opacity={s.o} />
+    ))}
+  </svg>
+  <canvas id="particles" class="pf-canvas"></canvas>
+</div>
+
+<script is:inline>
+  (() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const canvas = document.getElementById('particles');
+    if (!canvas || reduce) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let w = 0;
+    let h = 0;
+    let parts = [];
+
+    function resize() {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      w = canvas.clientWidth;
+      h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const n = Math.min(120, Math.floor(w / 14));
+      parts = Array.from({ length: n }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: 0.5 + Math.random() * 1.5,
+        v: 2 + Math.random() * 6, // px/s 上浮
+        a: 0.08 + Math.random() * 0.35,
+        tw: 0.5 + Math.random() * 3, // 闪烁周期
+        ph: Math.random() * Math.PI * 2,
+      }));
+    }
+
+    let t = 0;
+    let last = performance.now();
+    function frame(now) {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      t += dt;
+      if (!document.hidden) {
+        ctx.clearRect(0, 0, w, h);
+        for (const p of parts) {
+          p.y -= p.v * dt;
+          if (p.y < -4) {
+            p.y = h + 4;
+            p.x = Math.random() * w;
+          }
+          const a = p.a * (0.6 + 0.4 * Math.sin((t / p.tw) * Math.PI * 2 + p.ph));
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(232,230,225,' + a.toFixed(3) + ')';
+          ctx.fill();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+    requestAnimationFrame(frame);
+  })();
+</script>
+
+<style>
+  .particle-field {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* 1) 深空渐变底 */
+  .pf-gradient {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(1200px 800px at 20% -10%, rgba(60, 80, 140, 0.18), transparent 60%),
+      radial-gradient(900px 600px at 110% 110%, rgba(201, 169, 122, 0.06), transparent 55%),
+      var(--bg);
+  }
+
+  /* 2) 静态星空：120s 慢漂移（reduced-motion 关闭） */
+  .pf-stars {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pf-stars {
+      animation: pf-drift 120s linear infinite;
+    }
+  }
+
+  @keyframes pf-drift {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-40px);
+    }
+  }
+
+  /* 3) Canvas 漂移层 */
+  .pf-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>

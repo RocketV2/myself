@@ -1,0 +1,19 @@
+/* 字体自托管。
+   本文件在 public/ 根，url() 用相对路径 —— 相对 CSS 文件自身解析，
+   天然跟随站点 base（项目页 /<repo>/fonts/...，用户页 /fonts/...），
+   且 public 文件不经 Vite 处理，路径永不被改写。 */
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/serif-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('fonts/serif-700.woff2') format('woff2');
+}

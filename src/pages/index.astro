@@ -1,0 +1,173 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import SignalStrip from '../components/SignalStrip.astro';
+import EntryList from '../components/EntryList.astro';
+import EntryCard from '../components/EntryCard.astro';
+import QuoteCard from '../components/QuoteCard.astro';
+import { getCollection } from 'astro:content';
+import { p } from '../lib/paths';
+import {
+  pillarCounts,
+  streakStats,
+  latest,
+  emotionOverview,
+  published,
+  sortByDateDesc,
+  type MentorEntry,
+} from '../lib/stats';
+
+const reflections = await getCollection('reflections');
+const reviews = await getCollection('reviews');
+const mentors = await getCollection('mentors');
+
+const counts = pillarCounts(reflections, reviews, mentors);
+const { current, longest } = streakStats(reflections, reviews);
+const overview = emotionOverview(reviews);
+
+const latestReflections = latest(reflections, 3);
+// 复盘预览：周复盘与日复盘混合，取最新 3 条
+const latestReviews = sortByDateDesc(published(reviews)).slice(0, 3);
+// 语录按日期倒序（无日期的排最后）
+const latestMentors: MentorEntry[] = published(mentors)
+  .sort(
+    (a, b) =>
+      (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0),
+  )
+  .slice(0, 3);
+
+const reviewChips = (r: (typeof latestReviews)[number]) => [
+  r.data.type === 'weekly' ? '周复盘' : r.data.cyclePhase,
+  `${r.data.disciplineScore}/5 纪律`,
+];
+---
+
+<Base>
+  <Hero />
+  <SignalStrip counts={counts} streak={current} longest={longest} />
+
+  <!-- 01 · 感悟 -->
+  <section id="reflections" class="section container">
+    <header class="section-head" data-reveal>
+      <span class="sec-no">01</span>
+      <h2 class="sec-title">感悟反思</h2>
+      <a class="sec-more" href={p('reflections/')}>全部</a>
+    </header>
+    <EntryList>
+      {latestReflections.map((r) => (
+        <EntryCard
+          href={p(`reflections/${r.id}/`)}
+          title={r.data.title}
+          date={r.data.date}
+          chips={r.data.tags.slice(0, 2)}
+          excerpt={r.data.excerpt}
+        />
+      ))}
+    </EntryList>
+  </section>
+
+  <!-- 02 · 复盘 -->
+  <section id="reviews" class="section container">
+    <header class="section-head" data-reveal>
+      <span class="sec-no">02</span>
+      <h2 class="sec-title">超短复盘</h2>
+      <a class="sec-more" href={p('reviews/')}>全部</a>
+    </header>
+    <div class="overview" data-reveal>
+      <div class="overview-cell">
+        <span class="overview-label">当前情绪</span>
+        <strong>{overview.phase ?? '—'}</strong>
+      </div>
+      <div class="overview-cell">
+        <span class="overview-label">最高板记录</span>
+        <strong>{overview.maxBoard} 板</strong>
+      </div>
+      <p class="overview-note">
+        每天收盘后如实记录：情绪周期、最高板、主线、操作与纪律打分。数据不说谎，曲线会替我复盘自己。
+      </p>
+    </div>
+    <EntryList>
+      {latestReviews.map((r) => (
+        <EntryCard
+          href={p(`reviews/${r.id}/`)}
+          title={r.data.title}
+          date={r.data.date}
+          chips={reviewChips(r)}
+          excerpt={r.data.marketContext}
+        />
+      ))}
+    </EntryList>
+  </section>
+
+  <!-- 03 · 语录 -->
+  <section id="mentors" class="section container">
+    <header class="section-head" data-reveal>
+      <span class="sec-no">03</span>
+      <h2 class="sec-title">前辈语录</h2>
+      <a class="sec-more" href={p('mentors/')}>全部</a>
+    </header>
+    <ol class="quote-grid" data-reveal-group>
+      {latestMentors.map((m) => (
+        <QuoteCard
+          href={p(`mentors/${m.id}/`)}
+          name={m.data.name}
+          alias={m.data.alias}
+          quote={m.data.quote}
+          source={m.data.source}
+          hasMedia={m.data.media !== undefined}
+        />
+      ))}
+    </ol>
+  </section>
+</Base>
+
+<style>
+  .overview {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+
+  .overview-cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .overview-label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .overview-cell strong {
+    font-family: var(--font-serif);
+    font-size: var(--fs-h2);
+    color: var(--accent);
+    line-height: 1.1;
+  }
+
+  .overview-note {
+    max-width: 30rem;
+    font-size: var(--fs-small);
+    color: var(--ink-dim);
+  }
+
+  .quote-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+  }
+
+  @media (max-width: 900px) {
+    .quote-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

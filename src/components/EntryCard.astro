@@ -1,0 +1,103 @@
+---
+import { fmtCN } from '../lib/dates';
+
+interface Props {
+  href: string;
+  title: string;
+  date: Date;
+  /** 展示用标签（复盘：相位/纪律分；感悟：tags） */
+  chips?: string[];
+  excerpt?: string;
+}
+
+const { href, title, date, chips = [], excerpt } = Astro.props;
+---
+
+<li class="entry" data-reveal>
+  <a href={href} class="entry-link">
+    <time class="entry-date" datetime={date.toISOString()}>{fmtCN(date)}</time>
+    <span class="entry-body">
+      <span class="entry-title">{title}</span>
+      {excerpt && <span class="entry-excerpt">{excerpt}</span>}
+    </span>
+    {chips.length > 0 && (
+      <span class="entry-chips">
+        {chips.map((c) => (
+          <span class="chip">{c}</span>
+        ))}
+      </span>
+    )}
+  </a>
+</li>
+
+<style>
+  .entry {
+    list-style: none;
+  }
+
+  .entry-link {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: var(--space-5);
+    padding-block: var(--space-3);
+    border-bottom: var(--hairline) solid var(--line);
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease-out);
+  }
+
+  .entry-link:hover {
+    background: rgba(232, 230, 225, 0.03);
+  }
+
+  .entry-date {
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .entry-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .entry-title {
+    font-size: var(--fs-body);
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  .entry-link:hover .entry-title {
+    color: var(--accent);
+  }
+
+  .entry-excerpt {
+    font-size: var(--fs-small);
+    color: var(--ink-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .entry-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 640px) {
+    .entry-link {
+      grid-template-columns: auto 1fr;
+    }
+
+    .entry-chips {
+      grid-column: 2;
+      justify-content: flex-start;
+    }
+  }
+</style>

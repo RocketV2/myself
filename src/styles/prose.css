@@ -1,0 +1,80 @@
+/* ============ 长文阅读（.prose） ============ */
+.prose {
+  max-width: var(--measure);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+
+.prose > * + * {
+  margin-top: var(--space-5);
+}
+
+.prose h2 {
+  font-size: var(--fs-h2);
+  letter-spacing: 0.06em;
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: var(--hairline) solid var(--line);
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  letter-spacing: 0.04em;
+  margin-top: var(--space-6);
+}
+
+.prose strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.prose em {
+  color: var(--ink-dim);
+}
+
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: var(--space-2) 0 var(--space-2) var(--space-5);
+  border-left: var(--hairline) solid var(--accent);
+  color: var(--ink-dim);
+  font-style: normal;
+}
+
+.prose blockquote p + p {
+  margin-top: var(--space-3);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5em;
+}
+
+.prose li + li {
+  margin-top: var(--space-2);
+}
+
+.prose hr {
+  border: none;
+  border-top: var(--hairline) solid var(--line);
+  margin-block: var(--space-6);
+}
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bg-elev);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.1em 0.4em;
+}
+
+.prose img {
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius);
+}

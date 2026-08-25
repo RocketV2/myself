@@ -1,0 +1,188 @@
+---
+import ParticleField from './ParticleField.astro';
+
+const entries = [
+  { href: '#reflections', label: '感悟' },
+  { href: '#reviews', label: '复盘' },
+  { href: '#mentors', label: '语录' },
+];
+---
+
+<section class="hero">
+  <ParticleField />
+  <div class="hero-content">
+    <p class="hero-kicker">二〇二六 · 个人实修记录</p>
+    <h1 class="hero-title">
+      <span>找到自己</span>
+      <span>重塑自己</span>
+    </h1>
+    <p class="hero-sub">FIND MYSELF · REBUILD MYSELF</p>
+    <p class="hero-manifesto">在混沌里打捞秩序，在亏损里打捞纪律。</p>
+    <nav class="hero-entries" aria-label="板块入口">
+      {entries.map((e) => (
+        <a href={e.href}>
+          <i class="hero-dot" aria-hidden="true"></i>
+          {e.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+  <div class="hero-cue" aria-hidden="true">
+    <span class="hero-cue-line"></span>
+    <span class="hero-cue-word">下</span>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: var(--maxw);
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-top: var(--nav-h);
+    padding-bottom: var(--space-7);
+  }
+
+  .hero-kicker {
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    letter-spacing: 0.2em;
+    color: var(--ink-dim);
+    margin: 0 0 var(--space-5);
+  }
+
+  .hero-title {
+    font-size: var(--fs-hero);
+    letter-spacing: var(--track-display);
+    line-height: 1.18;
+    max-width: 10em;
+  }
+
+  .hero-title span {
+    display: block;
+  }
+
+  .hero-sub {
+    margin: var(--space-5) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-small);
+    letter-spacing: var(--track-sub);
+    color: var(--ink-dim);
+  }
+
+  .hero-manifesto {
+    margin: var(--space-6) 0 0;
+    max-width: var(--measure);
+    color: var(--ink);
+    font-size: var(--fs-body);
+  }
+
+  .hero-manifesto::before {
+    content: '「';
+    color: var(--accent);
+  }
+
+  .hero-manifesto::after {
+    content: '」';
+    color: var(--accent);
+  }
+
+  .hero-entries {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+
+  .hero-entries a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    color: var(--ink-dim);
+    text-decoration: none;
+    letter-spacing: 0.12em;
+    transition: color 0.2s var(--ease-out);
+  }
+
+  .hero-entries a:hover {
+    color: var(--ink);
+  }
+
+  .hero-dot {
+    width: 0.95em;
+    height: 0.95em;
+    border: var(--hairline) solid var(--line-strong);
+    border-radius: 50%;
+    transition:
+      background-color 0.12s var(--ease-out),
+      border-color 0.12s var(--ease-out);
+  }
+
+  .hero-entries a:hover .hero-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* 滚动提示 */
+  .hero-cue {
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    bottom: var(--space-5);
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--ink-dim);
+  }
+
+  .hero-cue-line {
+    width: 1px;
+    height: 56px;
+    background: var(--line-strong);
+  }
+
+  .hero-cue-word {
+    font-family: var(--font-sans);
+    font-size: var(--fs-mono);
+    letter-spacing: 0.2em;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-cue {
+      animation: cue-pulse 2.6s var(--ease-out) infinite;
+    }
+  }
+
+  @keyframes cue-pulse {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: translateX(-50%) translateY(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(6px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-cue {
+      display: none;
+    }
+  }
+</style>

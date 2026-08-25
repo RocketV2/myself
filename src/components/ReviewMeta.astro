@@ -1,0 +1,148 @@
+---
+import DisciplineDots from './DisciplineDots.astro';
+import PnlBadge from './PnlBadge.astro';
+import type { ReviewEntry } from '../lib/stats';
+
+interface Props {
+  review: ReviewEntry;
+}
+
+const { review } = Astro.props;
+const d = review.data;
+
+const resultLabel: Record<string, string> = {
+  win: '胜',
+  loss: '负',
+  hold: '持仓',
+  none: '未操作',
+};
+
+const tradesText =
+  d.trades.length === 0
+    ? '空仓 / 无操作'
+    : d.trades
+        .map((t) => `${t.stock ?? '—'} · ${t.type} · ${resultLabel[t.result]}${t.pnl !== undefined ? ` (${t.pnl > 0 ? '+' : ''}${t.pnl}%)` : ''}`)
+        .join('　');
+---
+
+<dl class="review-meta">
+  <div class="rm-row">
+    <dt>复盘类型</dt>
+    <dd>{d.type === 'weekly' ? '周复盘' : '每日复盘'}</dd>
+  </div>
+  <div class="rm-row">
+    <dt>情绪周期</dt>
+    <dd>
+      <span class="chip chip--accent">{d.cyclePhase}</span>
+      {d.cycleDay !== undefined && <span class="rm-sub">周期内第 {d.cycleDay} 天</span>}
+    </dd>
+  </div>
+  {d.maxBoard !== undefined && (
+    <div class="rm-row">
+      <dt>最高板</dt>
+      <dd>
+        {d.maxBoard} 板
+        {d.maxBoardStock && <span class="rm-sub">{d.maxBoardStock}</span>}
+      </dd>
+    </div>
+  )}
+  {d.themes.length > 0 && (
+    <div class="rm-row">
+      <dt>主线题材</dt>
+      <dd>
+        {d.themes.map((t) => (
+          <span class="chip">{t}</span>
+        ))}
+      </dd>
+    </div>
+  )}
+  <div class="rm-row">
+    <dt>操作记录</dt>
+    <dd>{tradesText}</dd>
+  </div>
+  {d.pnl !== undefined && (
+    <div class="rm-row">
+      <dt>盈亏</dt>
+      <dd>
+        <PnlBadge pnl={d.pnl} />
+      </dd>
+    </div>
+  )}
+  <div class="rm-row">
+    <dt>纪律</dt>
+    <dd class="rm-discipline">
+      <DisciplineDots score={d.disciplineScore} />
+      <span class="rm-sub">{d.disciplineScore} / 5</span>
+      {d.disciplineNote && <span class="rm-note">{d.disciplineNote}</span>}
+    </dd>
+  </div>
+  {d.marketContext && (
+    <div class="rm-row">
+      <dt>市场环境</dt>
+      <dd class="rm-sub">{d.marketContext}</dd>
+    </div>
+  )}
+</dl>
+
+<style>
+  .review-meta {
+    margin: 0;
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+
+  .rm-row {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: var(--hairline) solid var(--line);
+    align-items: baseline;
+  }
+
+  .rm-row:last-child {
+    border-bottom: none;
+  }
+
+  .rm-row dt {
+    font-family: var(--font-sans);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .rm-row dd {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-size: var(--fs-body);
+  }
+
+  .rm-sub {
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+  }
+
+  .rm-note {
+    font-size: var(--fs-small);
+    color: var(--accent);
+    width: 100%;
+  }
+
+  .rm-discipline {
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+  }
+
+  @media (max-width: 640px) {
+    .rm-row {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+</style>

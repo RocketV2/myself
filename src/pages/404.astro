@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import { p } from '../lib/paths';
+---
+
+<Base title="404 — 找到自己 · 重塑自己">
+  <section class="notfound">
+    <p class="nf-code">404</p>
+    <h1>这一页还没有被打捞出来</h1>
+    <p class="nf-note">它也许还没被写下，也许被挪到了别处。</p>
+    <a class="nf-home" href={p('')}>回到首页</a>
+  </section>
+</Base>
+
+<style>
+  .notfound {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--space-4);
+    padding: var(--space-6);
+  }
+
+  .nf-code {
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  .notfound h1 {
+    font-size: var(--fs-h1);
+    letter-spacing: var(--track-display);
+  }
+
+  .nf-note {
+    color: var(--ink-dim);
+  }
+
+  .nf-home {
+    margin-top: var(--space-4);
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+</style>

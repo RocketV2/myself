@@ -1,0 +1,107 @@
+---
+import Prose from '../../layouts/Prose.astro';
+import AudioPlayer from '../../components/AudioPlayer.astro';
+import MediaEmbed from '../../components/MediaEmbed.astro';
+import { getCollection, render } from 'astro:content';
+import { p } from '../../lib/paths';
+import type { MentorEntry } from '../../lib/stats';
+
+export async function getStaticPaths() {
+  const mentors = await getCollection('mentors');
+  return mentors
+    .filter((m) => !m.data.draft)
+    .map((m) => ({ params: { slug: m.id }, props: { entry: m } }));
+}
+
+const { entry } = Astro.props as { entry: MentorEntry };
+const { Content } = await render(entry);
+const media = entry.data.media;
+---
+
+<Prose title={`${entry.data.name} — 前辈语录`} description={entry.data.quote}>
+  <article class="container">
+    <header class="article-head" data-reveal>
+      <p class="kicker">
+        <a href={p('mentors/')}>前辈语录</a>
+        {entry.data.source && (
+          <>
+            <span aria-hidden="true"> / </span>
+            {entry.data.source}
+          </>
+        )}
+      </p>
+      <h1 class="quote-name">
+        {entry.data.name}
+        {entry.data.alias && <span class="quote-alias">（{entry.data.alias}）</span>}
+      </h1>
+      <blockquote class="quote-big">{entry.data.quote}</blockquote>
+    </header>
+
+    {media && (
+      <div class="media-block" data-reveal>
+        {media.kind === 'audio' && <AudioPlayer file={media.file} title={`${entry.data.name} · 原声`} />}
+        {media.kind === 'video' && <AudioPlayer file={media.file} title={`${entry.data.name} · 视频原文件`} />}
+        {media.kind === 'embed' && (
+          <MediaEmbed provider={media.provider} videoId={media.videoId} title={`${entry.data.name} · 原视频`} />
+        )}
+      </div>
+    )}
+
+    <div class="prose article-body" data-reveal>
+      <Content />
+    </div>
+  </article>
+</Prose>
+
+<style>
+  .article-head {
+    padding-top: calc(var(--nav-h) + var(--space-7));
+    padding-bottom: var(--space-6);
+    max-width: var(--measure);
+  }
+
+  .article-head .kicker a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .quote-name {
+    font-size: var(--fs-h1);
+    letter-spacing: var(--track-display);
+    margin-top: var(--space-4);
+  }
+
+  .quote-alias {
+    font-size: var(--fs-h2);
+    color: var(--ink-dim);
+  }
+
+  .quote-big {
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    border: none;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    line-height: 1.75;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+  }
+
+  .quote-big::before {
+    content: '「';
+    color: var(--accent);
+  }
+
+  .quote-big::after {
+    content: '」';
+    color: var(--accent);
+  }
+
+  .media-block {
+    max-width: var(--measure);
+    margin-bottom: var(--space-7);
+  }
+
+  .article-body {
+    margin-top: 0;
+  }
+</style>

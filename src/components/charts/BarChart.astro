@@ -1,0 +1,123 @@
+---
+import { linearScale } from '../../lib/charts';
+import type { BarDatum } from '../../lib/charts';
+
+interface Props {
+  data: BarDatum[];
+  ariaLabel: string;
+  height?: number;
+  width?: number;
+}
+
+const { data, ariaLabel, height = 240, width = 640 } = Astro.props;
+
+const M = { top: 26, right: 14, bottom: 36, left: 10 };
+const plotW = width - M.left - M.right;
+const plotH = height - M.top - M.bottom;
+const maxV = Math.max(1, ...data.map((d) => d.value));
+const step = plotW / Math.max(1, data.length);
+const barW = Math.min(56, step * 0.5);
+const yFor = linearScale([0, maxV], [M.top + plotH, M.top]);
+const baseline = M.top + plotH;
+const rects = data.map((d, i) => {
+  const x = M.left + i * step + (step - barW) / 2;
+  const h = Math.max(0, baseline - yFor(d.value));
+  return { d, x, y: baseline - h, h };
+});
+---
+
+{data.length > 0 && (
+  <figure class="chart" role="img" aria-label={ariaLabel}>
+    <svg viewBox={`0 0 ${width} ${height}`} role="presentation" aria-hidden="true">
+      <line x1={M.left} y1={baseline} x2={width - M.right} y2={baseline} class="baseline" />
+      {rects.map(({ d, x, y, h }) => (
+        <>
+          <rect x={x} y={y} width={barW} height={h} rx="2" class="bar" />
+          <text x={x + barW / 2} y={Math.max(12, y - 8)} class="val" text-anchor="middle">
+            {d.value}
+          </text>
+          <text x={x + barW / 2} y={height - 12} class="xlabel" text-anchor="middle">
+            {d.label}
+          </text>
+        </>
+      ))}
+    </svg>
+    <details class="chart-data">
+      <summary>数据表</summary>
+      <table>
+        <tbody>
+          {data.map((d) => (
+            <tr>
+              <th scope="row">{d.label}</th>
+              <td>{d.value} 笔</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </details>
+  </figure>
+)}
+
+<style>
+  .chart {
+    margin: 0;
+    width: 100%;
+  }
+
+  .chart svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .baseline {
+    stroke: var(--line-strong);
+    stroke-width: var(--hairline);
+  }
+
+  .bar {
+    fill: var(--accent);
+    opacity: 0.88;
+  }
+
+  .val,
+  .xlabel {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--ink-dim);
+  }
+
+  .val {
+    fill: var(--ink);
+  }
+
+  .chart-data {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+  }
+
+  .chart-data summary {
+    cursor: pointer;
+    color: var(--ink-dim);
+    transition: color 0.2s var(--ease-out);
+  }
+
+  .chart-data summary:hover {
+    color: var(--accent);
+  }
+
+  .chart-data table {
+    margin-top: var(--space-2);
+    border-collapse: collapse;
+    font-size: var(--fs-mono);
+  }
+
+  .chart-data th,
+  .chart-data td {
+    text-align: left;
+    font-weight: 400;
+    padding: 0.3rem 1.5rem 0.3rem 0;
+    border-bottom: var(--hairline) solid var(--line);
+  }
+</style>

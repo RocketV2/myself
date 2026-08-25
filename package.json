@@ -1,0 +1,26 @@
+{
+  "name": "myself",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "predev": "node scripts/subset-font.mjs",
+    "build": "astro build",
+    "prebuild": "node scripts/subset-font.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "new:reflection": "node scripts/new-entry.mjs reflection",
+    "new:review": "node scripts/new-entry.mjs review"
+  },
+  "dependencies": {
+    "astro": "^7.2.6"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@fontsource/noto-serif-sc": "^5.2.8",
+    "fontkit": "^2.0.4",
+    "subset-font": "^2.5.0",
+    "typescript": "^5.7.3"
+  }
+}

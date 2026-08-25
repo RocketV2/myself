@@ -1,0 +1,40 @@
+/* ============ 滚动揭示 ============
+   初始隐藏态只写在 @media (scripting: enabled) 里：
+   无 JS 的访问者直接看到全部内容。 */
+[data-reveal] {
+  transition:
+    opacity var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out);
+}
+
+@media (scripting: enabled) {
+  [data-reveal]:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* 列表内的级联延迟 */
+[data-reveal-group] > *:nth-child(2) {
+  transition-delay: 0.07s;
+}
+[data-reveal-group] > *:nth-child(3) {
+  transition-delay: 0.14s;
+}
+[data-reveal-group] > *:nth-child(4) {
+  transition-delay: 0.21s;
+}
+[data-reveal-group] > *:nth-child(5) {
+  transition-delay: 0.28s;
+}
+[data-reveal-group] > *:nth-child(6) {
+  transition-delay: 0.35s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

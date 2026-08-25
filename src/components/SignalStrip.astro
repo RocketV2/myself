@@ -1,0 +1,97 @@
+---
+import { fmtCN, todayKey, dayKey } from '../lib/dates';
+
+interface Props {
+  counts: { reflections: number; reviews: number; mentors: number };
+  streak: { days: number; end: Date };
+  longest: { days: number };
+}
+
+const { counts, streak, longest } = Astro.props;
+// 最新一条已停更时如实标注「截至」，不显示误导性的 0
+const stale = streak.days > 0 && dayKey(streak.end) !== todayKey();
+---
+
+<section class="signal" data-reveal>
+  <div class="container signal-inner">
+    <div class="signal-cell">
+      <strong>{counts.reflections}</strong>
+      <span>感悟 · 篇</span>
+    </div>
+    <div class="signal-cell">
+      <strong>{counts.reviews}</strong>
+      <span>复盘 · 篇</span>
+    </div>
+    <div class="signal-cell">
+      <strong>{counts.mentors}</strong>
+      <span>语录 · 条</span>
+    </div>
+    <div class="signal-cell signal-cell--streak">
+      <strong>{streak.days}</strong>
+      <span>
+        连续记录 · 天
+        {streak.days > 0 && <em>{stale ? `截至 ${fmtCN(streak.end)}` : `最长 ${longest.days} 天`}</em>}
+      </span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .signal {
+    border-top: var(--hairline) solid var(--line);
+    border-bottom: var(--hairline) solid var(--line);
+    background: var(--bg-elev);
+  }
+
+  .signal-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+  }
+
+  .signal-cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-inline: var(--space-5);
+    border-left: var(--hairline) solid var(--line);
+  }
+
+  .signal-cell:first-child {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .signal-cell strong {
+    font-family: var(--font-serif);
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .signal-cell span {
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .signal-cell em {
+    font-style: normal;
+    color: var(--accent);
+    margin-left: var(--space-2);
+  }
+
+  @media (max-width: 760px) {
+    .signal-inner {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .signal-cell:nth-child(3) {
+      border-left: none;
+      padding-left: 0;
+    }
+  }
+</style>

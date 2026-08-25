@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import EntryCard from '../../components/EntryCard.astro';
+import { getCollection } from 'astro:content';
+import { p } from '../../lib/paths';
+import { published, sortByDateDesc } from '../../lib/stats';
+
+const reflections = sortByDateDesc(published(await getCollection('reflections')));
+---
+
+<Base title="感悟反思 — 找到自己 · 重塑自己" description="日常感悟与反思：盘后安静下来才想明白的事。">
+  <div class="container">
+    <header class="page-head" data-reveal>
+      <p class="kicker">01 · 感悟反思</p>
+      <h1>打捞自己</h1>
+      <p class="lede">
+        记录那些盘后安静下来才想明白的事。账户会清零，情绪会失真，只有写下来的东西不会骗你。共 {reflections.length} 篇。
+      </p>
+    </header>
+
+    {
+      reflections.length > 0 ? (
+        <EntryList>
+          {reflections.map((r) => (
+            <EntryCard
+              href={p(`reflections/${r.id}/`)}
+              title={r.data.title}
+              date={r.data.date}
+              chips={r.data.tags.slice(0, 3)}
+              excerpt={r.data.excerpt}
+            />
+          ))}
+        </EntryList>
+      ) : (
+        <p class="empty">还没有感悟。用 npm run new:reflection "标题" 写第一篇。</p>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .empty {
+    color: var(--ink-dim);
+    padding-block: var(--space-7);
+  }
+</style>

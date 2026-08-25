@@ -1,0 +1,39 @@
+---
+interface Props {
+  pnl?: number;
+}
+
+const { pnl } = Astro.props;
+
+const text =
+  pnl === undefined ? '—' : `${pnl > 0 ? '+' : ''}${pnl.toFixed(1)}%`;
+const cls =
+  pnl === undefined || pnl === 0 ? 'pnl pnl--flat' : pnl > 0 ? 'pnl pnl--pos' : 'pnl pnl--neg';
+---
+
+<span class={cls}>{text}</span>
+
+<style>
+  .pnl {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35em;
+    font-family: var(--font-mono);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .pnl--pos {
+    color: var(--pos);
+  }
+
+  .pnl--neg {
+    color: var(--neg);
+  }
+
+  .pnl--flat {
+    color: var(--ink-dim);
+    font-weight: 400;
+  }
+</style>

@@ -1,0 +1,58 @@
+---
+interface Props {
+  provider: 'bilibili' | 'youtube';
+  videoId: string;
+  title?: string;
+}
+
+const { provider, videoId, title } = Astro.props;
+const src =
+  provider === 'bilibili'
+    ? `https://player.bilibili.com/player.html?bvid=${videoId}&autoplay=0&danmaku=0`
+    : `https://www.youtube-nocookie.com/embed/${videoId}`;
+---
+
+<div class="embed-block">
+  <p class="embed-label">{title ?? (provider === 'bilibili' ? 'B 站原视频' : 'YouTube 原视频')}</p>
+  <div class="embed-frame">
+    <iframe
+      src={src}
+      title={title ?? '语录视频'}
+      loading="lazy"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+  </div>
+</div>
+
+<style>
+  .embed-block {
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+    padding: var(--space-5);
+  }
+
+  .embed-label {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .embed-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  .embed-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: var(--radius);
+  }
+</style>

@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import QuoteCard from '../../components/QuoteCard.astro';
+import { getCollection } from 'astro:content';
+import { p } from '../../lib/paths';
+import { published } from '../../lib/stats';
+
+const mentors = published(await getCollection('mentors')).sort(
+  (a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0),
+);
+---
+
+<Base title="前辈语录 — 找到自己 · 重塑自己" description="收藏的优秀前辈语录，连声音一起存下来，在管不住手的时候听。">
+  <div class="container">
+    <header class="page-head" data-reveal>
+      <p class="kicker">03 · 前辈语录</p>
+      <h1>站在前辈的肩膀上</h1>
+      <p class="lede">
+        把前辈说过的话连声音一起存下来 —— 在管不住手的时候，戴上耳机听一遍。共 {mentors.length} 条。
+      </p>
+    </header>
+
+    {
+      mentors.length > 0 ? (
+        <ol class="quote-grid" data-reveal-group>
+          {mentors.map((m) => (
+            <QuoteCard
+              href={p(`mentors/${m.id}/`)}
+              name={m.data.name}
+              alias={m.data.alias}
+              quote={m.data.quote}
+              source={m.data.source}
+              hasMedia={m.data.media !== undefined}
+            />
+          ))}
+        </ol>
+      ) : (
+        <p class="empty">还没有收藏。新建 src/content/mentors/ 下的 md 文件即可。</p>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .quote-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+
+  @media (max-width: 760px) {
+    .quote-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .empty {
+    color: var(--ink-dim);
+    padding-block: var(--space-7);
+  }
+</style>

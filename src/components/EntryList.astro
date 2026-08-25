@@ -1,0 +1,19 @@
+---
+interface Props {
+  id?: string;
+}
+
+const { id } = Astro.props;
+---
+
+<ol {id} class="entries" data-reveal-group>
+  <slot />
+</ol>
+
+<style>
+  .entries {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

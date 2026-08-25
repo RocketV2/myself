@@ -1,0 +1,40 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p class="footer-line">在混沌里打捞秩序，在亏损里打捞纪律。</p>
+    <p class="footer-meta">
+      找到自己 · 重塑自己 — {year}
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: var(--hairline) solid var(--line);
+    margin-top: var(--space-8);
+    padding-block: var(--space-6);
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .footer-line {
+    font-size: var(--fs-small);
+    color: var(--ink-dim);
+  }
+
+  .footer-meta {
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+    letter-spacing: 0.06em;
+  }
+</style>

@@ -1,0 +1,183 @@
+/* ============ 重置与全局基础 ============ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--glow);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+/* ============ 布局 ============ */
+.container {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.section {
+  padding-block: var(--space-8);
+  scroll-margin-top: var(--nav-h);
+}
+
+/* 板块头：发丝线 + 编号标签 + 标题 + 更多链接 */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  border-top: var(--hairline) solid var(--line);
+  padding-top: var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.section-head .sec-no {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  color: var(--ink-dim);
+  letter-spacing: 0.08em;
+}
+
+.section-head .sec-title {
+  font-size: var(--fs-h2);
+  letter-spacing: var(--track-display);
+}
+
+.section-head .sec-more {
+  margin-left: auto;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  color: var(--ink-dim);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s var(--ease-out);
+}
+
+.section-head .sec-more:hover {
+  color: var(--accent);
+}
+
+/* 箭头用 border 画（避免依赖字体字形） */
+.section-head .sec-more::after {
+  content: '';
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  border-top: var(--hairline) solid currentColor;
+  border-right: var(--hairline) solid currentColor;
+  transform: rotate(45deg) translateY(-0.08em);
+  margin-left: var(--space-2);
+}
+
+/* ============ 通用小组件 ============ */
+.chip {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: var(--fs-mono);
+  color: var(--ink-dim);
+  border: var(--hairline) solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.65rem;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+.chip--accent {
+  color: var(--accent);
+  border-color: rgba(201, 169, 122, 0.4);
+}
+
+.hairline {
+  border: none;
+  border-top: var(--hairline) solid var(--line);
+  margin: 0;
+}
+
+/* 日期/数字等元信息 */
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+}
+
+/* 页面头部（列表页/详情页共用） */
+.page-head {
+  padding-top: calc(var(--nav-h) + var(--space-7));
+  padding-bottom: var(--space-6);
+}
+
+.page-head .kicker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  color: var(--ink-dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.page-head h1 {
+  font-size: var(--fs-h1);
+  letter-spacing: var(--track-display);
+  margin-bottom: var(--space-3);
+}
+
+.page-head .lede {
+  color: var(--ink-dim);
+  max-width: var(--measure);
+}

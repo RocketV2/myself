@@ -1,0 +1,56 @@
+/* ============================================================
+   设计 token — 深空 · 极简禅
+   全站唯一来源。对比度（对 --bg #05060a，按 WCAG 实测）：
+   --ink 16.2:1 · --ink-dim 8.5:1 · --accent 9.1:1
+   --pos 9.8:1 · --neg 7.4:1 — 正文用 --ink（AA/AAA），
+   元信息用 --ink-dim（AA）；--accent 链接必须辅以下划线，
+   颜色不能是唯一信号。
+   ============================================================ */
+:root {
+  /* 颜色 —— 深空 */
+  --bg: #05060a;
+  --bg-elev: #0b0e16;
+  --ink: #e8e6e1;
+  --ink-dim: #a3a8b4;
+  --accent: #c9a97a; /* 星光金 */
+  --pos: #8fbf9f;    /* 盈 */
+  --neg: #d08a8a;    /* 亏 */
+  --line: rgba(232, 230, 225, 0.14);
+  --line-strong: rgba(232, 230, 225, 0.28);
+  --glow: rgba(201, 169, 122, 0.35);
+
+  /* 字体 */
+  --font-serif: 'Noto Serif SC', 'Songti SC', 'Noto Serif CJK SC', 'SimSun', Georgia, serif;
+  --font-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  /* 字号 */
+  --fs-hero: clamp(3.2rem, 13vw, 8.5rem);
+  --fs-h1: clamp(2rem, 5vw, 3rem);
+  --fs-h2: clamp(1.4rem, 3vw, 1.9rem);
+  --fs-body: 1.0625rem;  /* 17px，CJK 长文 */
+  --fs-small: 0.875rem;
+  --fs-mono: 0.8125rem;  /* 日期、数字、标签 */
+  --lh-body: 1.9;
+  --track-display: 0.12em;
+  --track-sub: 0.35em;
+
+  /* 间距 & 规则 */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2.5rem;
+  --space-7: 4rem;
+  --space-8: 6.5rem;
+  --measure: 40rem;      /* CJK 行长上限 */
+  --maxw: 68rem;         /* 页面容器 */
+  --hairline: 1px;
+  --radius: 2px;
+  --nav-h: 3.5rem;
+
+  /* 动效 */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 0.6s;
+}

@@ -1,0 +1,64 @@
+---
+import Prose from '../../layouts/Prose.astro';
+import ReviewMeta from '../../components/ReviewMeta.astro';
+import { getCollection, render } from 'astro:content';
+import { p } from '../../lib/paths';
+import { fmtCN } from '../../lib/dates';
+import type { ReviewEntry } from '../../lib/stats';
+
+export async function getStaticPaths() {
+  const reviews = await getCollection('reviews');
+  return reviews
+    .filter((r) => !r.data.draft)
+    .map((r) => ({ params: { slug: r.id }, props: { entry: r } }));
+}
+
+const { entry } = Astro.props as { entry: ReviewEntry };
+const { Content } = await render(entry);
+---
+
+<Prose title={entry.data.title} description={`${entry.data.cyclePhase} · 纪律 ${entry.data.disciplineScore}/5`}>
+  <article class="container">
+    <header class="article-head" data-reveal>
+      <p class="kicker">
+        <a href={p('reviews/')}>超短复盘</a>
+        <span aria-hidden="true"> / </span>
+        <time datetime={entry.data.date.toISOString()}>{fmtCN(entry.data.date)}</time>
+        <span aria-hidden="true"> / </span>
+        {entry.data.type === 'weekly' ? '周复盘' : '每日复盘'}
+      </p>
+      <h1>{entry.data.title}</h1>
+    </header>
+
+    <div data-reveal>
+      <ReviewMeta review={entry} />
+    </div>
+
+    <div class="prose article-body" data-reveal>
+      <Content />
+    </div>
+  </article>
+</Prose>
+
+<style>
+  .article-head {
+    padding-top: calc(var(--nav-h) + var(--space-7));
+    padding-bottom: var(--space-6);
+    max-width: var(--measure);
+  }
+
+  .article-head .kicker a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .article-head h1 {
+    font-size: var(--fs-h1);
+    letter-spacing: var(--track-display);
+    margin-top: var(--space-4);
+  }
+
+  .article-body {
+    margin-top: var(--space-7);
+  }
+</style>

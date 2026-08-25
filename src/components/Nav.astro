@@ -1,0 +1,90 @@
+---
+import { base, p } from '../lib/paths';
+
+const links = [
+  { href: p('reflections/'), label: '感悟' },
+  { href: p('reviews/'), label: '复盘' },
+  { href: p('mentors/'), label: '语录' },
+];
+
+// 当前路径（去掉 base 前缀）用于高亮
+const current = Astro.url.pathname.replace(base || '/', '');
+---
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-wordmark" href={p('')} aria-label="回到首页">
+      找到自己<span class="nav-wordmark-dim"> · 重塑自己</span>
+    </a>
+    <nav class="nav-links" aria-label="主导航">
+      {links.map((l) => (
+        <a
+          class:list={['nav-link', { 'is-active': current === l.href.replace(base || '/', '') }]}
+          href={l.href}
+        >
+          {l.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: 50;
+    height: var(--nav-h);
+    background: rgba(5, 6, 10, 0.72);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: var(--hairline) solid var(--line);
+  }
+
+  .nav-inner {
+    max-width: var(--maxw);
+    margin-inline: auto;
+    height: 100%;
+    padding-inline: var(--space-6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .nav-wordmark {
+    font-family: var(--font-serif);
+    font-size: var(--fs-small);
+    letter-spacing: var(--track-display);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .nav-wordmark-dim {
+    color: var(--ink-dim);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: var(--space-6);
+  }
+
+  .nav-link {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    color: var(--ink-dim);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    transition: color 0.2s var(--ease-out);
+    white-space: nowrap;
+  }
+
+  .nav-link:hover {
+    color: var(--ink);
+  }
+
+  .nav-link.is-active {
+    color: var(--accent);
+  }
+</style>
