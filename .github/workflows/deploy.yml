@@ -31,7 +31,24 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # 仓库未启用 Pages 时自动启用并设为 GitHub Actions 源（幂等）
+      # 首次部署时把 Pages 源设为 GitHub Actions（幂等）。
+      # configure-pages 启用 Pages 时会用默认的 legacy(Jekyll) 源，必须显式切到 workflow，
+      # 否则 GitHub 内置的 Jekyll 流水线会接管构建。GITHUB_TOKEN 已授 pages:write。
+      - name: Ensure Pages uses workflow build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          API: https://api.github.com/repos/RocketV2/myself/pages
+        run: |
+          code=$(curl -sS -o /tmp/pages.json -w '%{http_code}' -X PUT \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API" -d '{"build_type":"workflow"}')
+          if [ "$code" = "404" ]; then
+            curl -sS -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "$API" -d '{"build_type":"workflow"}'
+          fi
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Deploy to GitHub Pages
