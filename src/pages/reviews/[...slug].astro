@@ -1,6 +1,5 @@
 ---
 import Prose from '../../layouts/Prose.astro';
-import ReviewMeta from '../../components/ReviewMeta.astro';
 import { getCollection, render } from 'astro:content';
 import { p } from '../../lib/paths';
 import { fmtCN } from '../../lib/dates';
@@ -15,32 +14,128 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props as { entry: ReviewEntry };
 const { Content } = await render(entry);
+const d = entry.data;
+
+const showBoardSection = d.marketVolume || d.limitUp !== undefined || d.limitDown !== undefined || d.boardCounts;
+const showTable = d.limitUpStocks.length > 0;
 ---
 
-<Prose title={entry.data.title} description={`${entry.data.cyclePhase} · 纪律 ${entry.data.disciplineScore}/5`}>
-  <article class="container">
-    <header class="article-head" data-reveal>
-      <p class="kicker">
-        <a href={p('reviews/')}>超短复盘</a>
-        <span aria-hidden="true"> / </span>
-        <time datetime={entry.data.date.toISOString()}>{fmtCN(entry.data.date)}</time>
-        <span aria-hidden="true"> / </span>
-        {entry.data.type === 'weekly' ? '周复盘' : '每日复盘'}
-      </p>
-      <h1>{entry.data.title}</h1>
-    </header>
+<Prose title={entry.data.title}>
+  <div class="review-detail">
+    <div class="container">
+      <article class="container">
+        <header class="article-head" data-reveal>
+          <p class="kicker">
+            <a href={p('reviews/')}>超短复盘</a>
+            <span aria-hidden="true"> / </span>
+            <time datetime={d.date.toISOString()}>{fmtCN(d.date)}</time>
+            <span aria-hidden="true"> / </span>
+            {d.type === 'weekly' ? '周复盘' : '每日复盘'}
+          </p>
+          <h1>{d.title}</h1>
+        </header>
 
-    <div data-reveal>
-      <ReviewMeta review={entry} />
-    </div>
+        <!-- 大盘与短线概况 -->
+        {showBoardSection && (
+          <section class="market-overview" data-reveal>
+            <h2 class="section-title">大盘概况</h2>
+            <div class="market-grid">
+              {d.marketVolume && (
+                <div class="market-cell">
+                  <span class="market-label">大盘成交量</span>
+                  <strong class="market-value">{d.marketVolume}</strong>
+                </div>
+              )}
+              {d.limitUp !== undefined && (
+                <div class="market-cell">
+                  <span class="market-label">涨停</span>
+                  <strong class="market-value is-up">{d.limitUp}</strong>
+                </div>
+              )}
+              {d.limitDown !== undefined && (
+                <div class="market-cell">
+                  <span class="market-label">跌停</span>
+                  <strong class="market-value is-down">{d.limitDown}</strong>
+                </div>
+              )}
+              {d.boardCounts && (
+                <div class="board-counts">
+                  <span class="market-label">板数分布</span>
+                  <div class="board-chips">
+                    {d.boardCounts.b1 !== undefined && <span class="board-chip">首板 {d.boardCounts.b1}</span>}
+                    {d.boardCounts.b2 !== undefined && <span class="board-chip">2板 {d.boardCounts.b2}</span>}
+                    {d.boardCounts.b3 !== undefined && <span class="board-chip">3板 {d.boardCounts.b3}</span>}
+                    {d.boardCounts.b4 !== undefined && <span class="board-chip">4板 {d.boardCounts.b4}</span>}
+                    {d.boardCounts.b5 !== undefined && <span class="board-chip">5板 {d.boardCounts.b5}</span>}
+                    {d.boardCounts.b6 !== undefined && <span class="board-chip">6板+ {d.boardCounts.b6}</span>}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
-    <div class="prose article-body" data-reveal>
-      <Content />
+        <!-- 涨停个股表格 -->
+        {showTable && (
+          <section class="stock-table-section" data-reveal>
+            <h2 class="section-title">涨停个股</h2>
+            <div class="table-wrap">
+              <table class="stock-table">
+                <thead>
+                  <tr>
+                    <th>板数</th>
+                    <th>代码</th>
+                    <th>个股</th>
+                    <th>涨停时间</th>
+                    <th>流通市值</th>
+                    <th>成交额</th>
+                    <th>涨停关键字</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {d.limitUpStocks.map((s) => (
+                    <tr>
+                      <td class="cell-board">{s.board}板</td>
+                      <td class="cell-code">{s.code}</td>
+                      <td class="cell-name">{s.name}</td>
+                      <td class="cell-time">{s.time}</td>
+                      <td class="cell-cap">{s.marketCap ?? '—'}</td>
+                      <td class="cell-turnover">{s.turnover ?? '—'}</td>
+                      <td class="cell-keyword">{s.keyword ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        <div class="prose article-body" data-reveal>
+          <Content />
+        </div>
+      </article>
     </div>
-  </article>
+  </div>
 </Prose>
 
 <style>
+  .review-detail {
+    /* 护眼模式 — 米黄暖白风 */
+    --bg: #f5f0e8;
+    --bg-elev: #ede7db;
+    --ink: #3c3a36;
+    --ink-dim: #7a756c;
+    --accent: #b8860b;
+    --pos: #3a7d4a;
+    --neg: #b84949;
+    --line: rgba(964, 958, 54, 0.15);
+    --line-strong: rgba(96, 85, 54, 0.078);
+    --glow: rgba(184, 134, 11, 0.2);
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
   .article-head {
     padding-top: calc(var(--nav-h) + var(--space-7));
     padding-bottom: var(--space-6);
@@ -58,7 +153,155 @@ const { Content } = await render(entry);
     margin-top: var(--space-4);
   }
 
-  .article-body {
+  /* ===== 大盘概况 ===== */
+  .section-title {
+    font-size: var(--fs-h2);
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: var(--hairline) solid var(--line);
+  }
+
+  .market-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    align-items: flex-start;
+  }
+
+  .market-cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 7rem;
+  }
+
+  .market-label {
+    font-family: var(--font-sans);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .market-value {
+    font-family: var(--font-serif);
+    font-size: var(--fs-h2);
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  .market-value.is-up {
+    color: var(--pos);
+  }
+
+  .market-value.is-down {
+    color: var(--neg);
+  }
+
+  .board-counts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 12rem;
+  }
+
+  .board-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .board-chip {
+    font-family: var(--font-sans);
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+    border: var(--hairline) solid var(--line);
+    border-radius: 999px;
+    padding: 0.1rem 0.65rem;
+    line-height: 1.7;
+    white-space: nowrap;
+  }
+
+  /* ===== 涨停个股表格 ===== */
+  .stock-table-section {
     margin-top: var(--space-7);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .stock-table {
+    width: 960px;
+    border-collapse: collapse;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+  }
+
+  .stock-table thead th {
+    text-align: left;
+    font-weight: 600;
+    font-size: var(--fs-mono);
+    color: var(--ink-dim);
+    letter-spacing: 0.04em;
+    padding: var(--space-3) var(--space-3);
+    border-bottom: var(--hairline) solid var(--line-strong);
+    white-space: nowrap;
+  }
+
+  .stock-table tbody td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: var(--hairline) solid var(--line);
+    vertical-align: middle;
+  }
+
+  .stock-table tbody tr:hover {
+    background: rgba(184, 134, 11, 0.04);
+  }
+
+  .cell-board {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .cell-code {
+    font-family: var(--font-mono);
+    color: var(--ink-dim);
+  }
+
+  .cell-name {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .cell-time {
+    font-family: var(--font-mono);
+    color: var(--ink-dim);
+  }
+
+  .cell-cap,
+  .cell-turnover {
+    font-family: var(--font-mono);
+    color: var(--ink);
+  }
+
+  .cell-keyword {
+    color: var(--ink-dim);
+  }
+
+  .article-body {
+    margin-top: var(--space-6032px);
+    max-width: var(--measure);
+  }
+
+  /* 覆写全局组件颜色 */
+  :global(.nav) {
+    background: rgba(245, 240, 656, 3232) var(--bg) !important;
+    border-bottom-color: var(--line) !important;
+  }
+
+  :global(.footer) {
+    border-top-color: var(--line) !important;
   }
 </style>

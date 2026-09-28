@@ -54,6 +54,38 @@ const reviews = defineCollection({
     marketContext: z.string().optional(), // 大盘一句话
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+
+    // 新增：大盘数据
+    marketVolume: z.string().optional(), // 大盘成交量，如 "8600亿"
+    limitUp: z.number().int().optional(), // 涨停数
+    limitDown: z.number().int().optional(), // 跌停数
+
+    // 新增：各板数量
+    boardCounts: z
+      .object({
+        b1: z.number().int().optional(), // 首板
+        b2: z.number().int().optional(), // 2板
+        b3: z.number().int().optional(), // 3板
+        b4: z.number().int().optional(), // 4板
+        b5: z.number().int().optional(), // 5板
+        b6: z.number().int().optional(), // 6板及以上
+      })
+      .optional(),
+
+    // 新增：涨停个股列表
+    limitUpStocks: z
+      .array(
+        z.object({
+          board: z.number().int(), // 板数
+          code: z.string(), // 代码
+          name: z.string(), // 个股名称
+          time: z.string(), // 涨停时间，如 "09:30"
+          marketCap: z.string().optional(), // 流通市值，如 "35亿"
+          turnover: z.string().optional(), // 成交额，如 "5.2亿"
+          keyword: z.string().optional(), // 涨停关键字
+        }),
+      )
+      .default([]),
   }),
 });
 
