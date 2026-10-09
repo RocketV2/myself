@@ -1,20 +1,19 @@
 # 找到自己 · 重塑自己
 
-个人实修日志站：记录日常感悟反思、每日/每周 A 股超短复盘、收藏的前辈语录。托管于 GitHub Pages，主题「找到自己、重塑自己」，视觉调性「深空 · 极简禅」。
+个人实修日志站：记录日常感悟反思、收藏的前辈语录。托管于 GitHub Pages，主题「找到自己、重塑自己」，视觉调性「深空 · 极简禅」。
 
-## 三个板块
+## 两个板块
 
 | 板块 | 目录 | 说明 |
 |---|---|---|
 | 01 · 感悟反思 | `src/content/reflections/` | 日常长文，一文件一篇 |
-| 02 · 超短复盘 | `src/content/reviews/daily/` `src/content/reviews/weekly/` | 结构化字段 + 自动汇总图表（情绪周期曲线 / 纪律趋势 / 胜率 / 交易类型） |
-| 03 · 前辈语录 | `src/content/mentors/` | 语录 + 音视频（本地文件或 B 站/YouTube 嵌入） |
+| 02 · 前辈语录 | `src/content/mentors/` | 语录 + 音视频（本地文件或 B 站/YouTube 嵌入） |
 
-首页自动统计：各板块篇数、连续记录天数（感悟 + 复盘合并计算）。
+首页自动统计：各板块篇数。
 
 ## 技术栈
 
-Astro 7（静态构建）+ Markdown 内容集合 + 手写内联 SVG 图表（零运行时依赖）。
+Astro 7（静态构建）+ Markdown 内容集合，零运行时依赖。
 字体自托管：`@fontsource/noto-serif-sc`（思源宋体）构建期子集化到 `public/fonts/`（每字重约 130 KB），无任何 Google/外网 CDN 依赖，大陆直连可用。
 
 ## 写作工作流
@@ -24,9 +23,6 @@ npm install
 
 # 新建一篇感悟
 npm run new:reflection "空仓不是失败"
-# 新建每日/每周复盘（weekly 日期自动取本周一）
-npm run new:review daily
-npm run new:review weekly
 
 # 本地预览（字体子集会随 dev/build 自动重新生成）
 npm run dev
@@ -34,9 +30,9 @@ npm run dev
 
 发布 = 写一个 md 文件 → commit → push（GitHub Actions 自动构建部署）。
 
-- 文件命名：感悟 `YYYY-MM-DD-标题.md`；复盘 `daily/YYYY-MM-DD.md`、`weekly/YYYY-MM-DD.md`（date 写周一）。
+- 文件命名：感悟 `YYYY-MM-DD-标题.md`。
 - frontmatter 字段见 `src/content.config.ts` 的 Zod schema（`npm run check` 做类型校验，保持绿色）。
-- 复盘必填字段：`type`、`cyclePhase`（冰点/启动/发酵/高潮/退潮）、`disciplineScore`（1-5）。`cycleDay`（周期内第几天）强烈建议填写 —— 情绪曲线平滑度依赖它。
+- `excerpt` 要么写一句话、要么整行删掉，**不能留空**（空值会被解析为 null，构建直接失败，站点不会更新）。
 - 想写草稿：加 `draft: true`，构建时跳过。
 
 ## 音视频媒体限制（重要）

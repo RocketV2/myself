@@ -10,8 +10,7 @@
     "prebuild": "node scripts/subset-font.mjs",
     "preview": "astro preview",
     "check": "astro check",
-    "new:reflection": "node scripts/new-entry.mjs reflection",
-    "new:review": "node scripts/new-entry.mjs review"
+    "new:reflection": "node scripts/new-entry.mjs reflection"
   },
   "dependencies": {
     "astro": "^7.2.6"

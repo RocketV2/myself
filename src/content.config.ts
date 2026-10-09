@@ -18,79 +18,7 @@ const reflections = defineCollection({
 });
 
 /**
- * 板块二：A股超短复盘 —— 一个集合 + type 判别字段（不拆两个集合）：
- * 胜率 / 连续记录 / 情绪曲线都要一条统一按日期排序的数据流，
- * 拆开会让每个聚合函数做合并，零收益。
- * 情绪周期为封闭域，用 enum；trades 带默认值，聚合永远安全。
- */
-const reviews = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/reviews' }),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date(), // daily = 当日；weekly = 该周周一
-    type: z.enum(['daily', 'weekly']),
-
-    cyclePhase: z.enum(['冰点', '启动', '发酵', '高潮', '退潮']),
-    cycleDay: z.number().int().min(1).optional(), // 周期内第几天（情绪曲线平滑度依赖它）
-
-    maxBoard: z.number().int().min(0).optional(), // 最高连板数
-    maxBoardStock: z.string().optional(), // 最高板个股
-    themes: z.array(z.string()).default([]), // 主线题材
-
-    trades: z
-      .array(
-        z.object({
-          stock: z.string().optional(),
-          type: z.enum(['打板', '半路', '低吸', '其他']),
-          result: z.enum(['win', 'loss', 'hold', 'none']), // win/loss 计入胜率；hold = 持仓未结
-          pnl: z.number().optional(), // 该笔 ±%
-        }),
-      )
-      .default([]),
-
-    pnl: z.number().optional(), // 当日/当周总盈亏 %
-    disciplineScore: z.number().int().min(1).max(5), // 必填 —— 站点主旨
-    disciplineNote: z.string().optional(), // 一句话：哪条纪律守住了/破了
-    marketContext: z.string().optional(), // 大盘一句话
-    tags: z.array(z.string()).default([]),
-    draft: z.boolean().default(false),
-
-    // 新增：大盘数据
-    marketVolume: z.string().optional(), // 大盘成交量，如 "8600亿"
-    limitUp: z.number().int().optional(), // 涨停数
-    limitDown: z.number().int().optional(), // 跌停数
-
-    // 新增：各板数量
-    boardCounts: z
-      .object({
-        b1: z.number().int().optional(), // 首板
-        b2: z.number().int().optional(), // 2板
-        b3: z.number().int().optional(), // 3板
-        b4: z.number().int().optional(), // 4板
-        b5: z.number().int().optional(), // 5板
-        b6: z.number().int().optional(), // 6板及以上
-      })
-      .optional(),
-
-    // 新增：涨停个股列表
-    limitUpStocks: z
-      .array(
-        z.object({
-          board: z.number().int(), // 板数
-          code: z.string(), // 代码
-          name: z.string(), // 个股名称
-          time: z.string(), // 涨停时间，如 "09:30"
-          marketCap: z.string().optional(), // 流通市值，如 "35亿"
-          turnover: z.string().optional(), // 成交额，如 "5.2亿"
-          keyword: z.string().optional(), // 涨停关键字
-        }),
-      )
-      .default([]),
-  }),
-});
-
-/**
- * 板块三：前辈语录 —— 一条语录一个文件；media 支持：
+ * 板块二：前辈语录 —— 一条语录一个文件；media 支持：
  *   audio/video 本地文件（提交入库，见 README 媒体限制）
  *   embed       B站/YouTube 外链（视频一律走 embed，LFS 在 Pages 不可用）
  */
@@ -118,4 +46,4 @@ const mentors = defineCollection({
   }),
 });
 
-export const collections = { reflections, reviews, mentors };
+export const collections = { reflections, mentors };
